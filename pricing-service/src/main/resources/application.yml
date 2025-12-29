@@ -1,0 +1,28 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: pricing-service
+
+# Mock configuration for testing
+pricing:
+  simulate-delay: ${SIMULATE_DELAY:false}
+  delay-ms: ${DELAY_MS:0}
+  simulate-failure: ${SIMULATE_FAILURE:false}
+  failure-rate: ${FAILURE_RATE:0}
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    com.example.pricingservice: DEBUG

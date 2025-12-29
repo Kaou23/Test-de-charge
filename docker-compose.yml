@@ -1,0 +1,144 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bookdb
+      MYSQL_USER: bookuser
+      MYSQL_PASSWORD: bookpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot" ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+    networks:
+      - app-network
+
+  # Pricing Service (Mock)
+  pricing-service:
+    build:
+      context: ./pricing-service
+      dockerfile: Dockerfile
+    container_name: pricing-service
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      SIMULATE_DELAY: "false"
+      DELAY_MS: 0
+      SIMULATE_FAILURE: "false"
+      FAILURE_RATE: 0
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - app-network
+
+  # Book Service Instance 1 - Port 8081
+  book-service-1:
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    container_name: book-service-1
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: 8081
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: bookdb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      PRICING_SERVICE_URL: http://pricing-service:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+      pricing-service:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - app-network
+
+  # Book Service Instance 2 - Port 8083
+  book-service-2:
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    container_name: book-service-2
+    ports:
+      - "8083:8083"
+    environment:
+      SERVER_PORT: 8083
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: bookdb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      PRICING_SERVICE_URL: http://pricing-service:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+      pricing-service:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - app-network
+
+  # Book Service Instance 3 - Port 8084
+  book-service-3:
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    container_name: book-service-3
+    ports:
+      - "8084:8084"
+    environment:
+      SERVER_PORT: 8084
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: bookdb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      PRICING_SERVICE_URL: http://pricing-service:8080
+    depends_on:
+      mysql:
+        condition: service_healthy
+      pricing-service:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8084/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
