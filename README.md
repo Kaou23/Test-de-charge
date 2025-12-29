@@ -158,8 +158,9 @@ This generates `SELECT ... FOR UPDATE` SQL, preventing concurrent modifications.
 - **Retry**: 3 attempts with exponential backoff
 - **Fallback**: Returns `0.0` when pricing-service is down
 
-## Stop Services
+<img width="768" height="542" alt="Capture d’écran 2025-12-29 232816" src="https://github.com/user-attachments/assets/93d9c0da-77f9-415a-84a6-9976c17ab697" />
+<img width="514" height="316" alt="Capture d’écran 2025-12-29 233048" src="https://github.com/user-attachments/assets/deaaaa64-085c-4014-9bad-f42e9679cbe2" />
+<img width="516" height="286" alt="Capture d’écran 2025-12-29 233259" src="https://github.com/user-attachments/assets/4519c8c6-670b-422d-ba1a-05572f45ceca" />
 
-```bash
-docker-compose down -v
-```
+<img width="1366" height="261" alt="Capture d’écran 2025-12-29 233342" src="https://github.com/user-attachments/assets/66cd6dbf-7dde-4fbe-917c-5fdf3efe0e77" />
+<img width="515" height="412" alt="Capture d’écran 2025-12-29 233415" src="https://github.com/user-attachments/assets/5087f768-d7ed-4bec-a7ee-4bbd59d1d659" />
